@@ -2,7 +2,6 @@ CREATE TABLE if not exists birds (
   id uuid primary key,
   falconer_id text not null,
   name text not null,
-  color text not null,
   species text not null,
   trap_date timestamp with time zone not null default now(),
   created_at timestamp with time zone default now(),

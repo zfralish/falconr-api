@@ -18,6 +18,7 @@ require (
 	github.com/golang/groupcache v0.0.0-20200121045136-8c9f03a8e57e // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/google/go-cmp v0.5.7 // indirect
+	github.com/google/uuid v1.3.0 // indirect
 	github.com/googleapis/gax-go/v2 v2.1.1 // indirect
 	go.opencensus.io v0.23.0 // indirect
 	golang.org/x/net v0.0.0-20220225172249-27dd8689420f // indirect
