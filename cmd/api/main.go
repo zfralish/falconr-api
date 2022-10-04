@@ -3,10 +3,12 @@ package main
 import (
 	"context"
 	"database/sql"
+	"falconr-api/internal/data"
 	firebase "firebase.google.com/go"
 	"flag"
 	"fmt"
 	"github.com/joho/godotenv"
+	_ "github.com/lib/pq"
 	"google.golang.org/api/option"
 	"log"
 	"net/http"
@@ -29,6 +31,7 @@ type config struct {
 type application struct {
 	config config
 	logger *log.Logger
+	models data.Models
 }
 
 const version = "1.0.0"
@@ -80,6 +83,7 @@ func main() {
 	app := &application{
 		config: cfg,
 		logger: logger,
+		models: data.NewModels(db),
 	}
 
 	srv := &http.Server{
