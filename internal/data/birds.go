@@ -2,6 +2,7 @@ package data
 
 import (
 	"database/sql"
+	"errors"
 	"falconr-api/internal/validator"
 	"github.com/google/uuid"
 	"time"
@@ -40,11 +41,52 @@ func (b BirdModel) Insert(bird *Bird) error {
 }
 
 func (b BirdModel) Get(id uuid.UUID) (*Bird, error) {
-	return nil, nil
+	query := `
+        SELECT *
+        FROM birds
+        WHERE id = $1`
+
+	var bird Bird
+
+	err := b.DB.QueryRow(query, id).Scan(
+		&bird.ID,
+		&bird.FalconerID,
+		&bird.Name,
+		&bird.Species,
+		&bird.TrapDate,
+		&bird.CreatedAt,
+		&bird.UpdatedAt,
+	)
+
+	if err != nil {
+		switch {
+		case errors.Is(err, sql.ErrNoRows):
+			return nil, ErrRecordNotFound
+		default:
+			return nil, err
+		}
+	}
+
+	return &bird, nil
 }
 
 func (b BirdModel) Update(bird *Bird) error {
-	return nil
+	query := `
+        UPDATE birds 
+        SET name = $1, falconer_id = $2, species = $3, trap_date = $4, updated_at = $5
+        WHERE id = $6
+        returning updated_at`
+
+	args := []any{
+		bird.Name,
+		bird.FalconerID,
+		bird.Species,
+		bird.TrapDate,
+		time.Now(),
+		bird.ID,
+	}
+
+	return b.DB.QueryRow(query, args...).Scan(&bird.UpdatedAt)
 }
 
 func (b BirdModel) Delete(id uuid.UUID) error {

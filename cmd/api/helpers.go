@@ -4,19 +4,19 @@ import (
 	"encoding/json" // New import
 	"errors"
 	"fmt"
+	"github.com/google/uuid"
 	"github.com/julienschmidt/httprouter"
 	"io"
 	"net/http"
-	"strconv"
 	"strings"
 )
 
-func (app *application) readIDParam(r *http.Request) (int64, error) {
+func (app *application) readIDParam(r *http.Request) (uuid.UUID, error) {
 	params := httprouter.ParamsFromContext(r.Context())
 
-	id, err := strconv.ParseInt(params.ByName("id"), 10, 64)
-	if err != nil || id < 1 {
-		return 0, errors.New("invalid id parameter")
+	id, err := uuid.Parse(params.ByName("id"))
+	if err != nil {
+		return uuid.Nil, errors.New("invalid id parameter")
 	}
 
 	return id, nil
@@ -25,7 +25,7 @@ func (app *application) readIDParam(r *http.Request) (int64, error) {
 type envelope map[string]any
 
 // Change the data parameter to have the type envelope instead of any.
-func (app *application) writeJSON(w http.ResponseWriter, status int, data envelope, headers http.Header) error {
+func (app *application) writeJSON(w http.ResponseWriter, status int, data any, headers http.Header) error {
 	js, err := json.MarshalIndent(data, "", "\t")
 	if err != nil {
 		return err
